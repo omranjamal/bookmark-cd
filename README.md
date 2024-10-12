@@ -12,6 +12,9 @@ go get
 go build
 
 sudo ln -s ./bookmark-cd /usr/bin
+
+# assuming you're using bash
+bookmark-cd --shell --eval >> ~/.bashrc
 ```
 
 ## Development
