@@ -19,7 +19,7 @@ import (
 
 var shellFunction string = `
 function bcd() {
-  TARGETPATH=$(/home/omran/Projects/omranjamal/boomark-cd/bookmark-cd $1)
+  TARGETPATH=$(bookmark-cd $1)
 
   if [ ! -z "${TARGETPATH}" ] ; then
     cd $TARGETPATH
