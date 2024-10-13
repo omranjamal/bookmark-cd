@@ -2,10 +2,9 @@
 
 ![GitHub Release](https://img.shields.io/github/v/release/omranjamal/bookmark-cd)
 
-
-
-
 > The fastest way to `cd` into your folder bookmarks that you create on your file manager.
+
+![DEMO](https://raw.githubusercontent.com/omranjamal/bookmark-cd/refs/heads/static/demo.gif)
 
 ## Features
 
