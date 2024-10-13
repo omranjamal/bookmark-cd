@@ -25,7 +25,7 @@ bcd() {
   TARGETPATH=$(bookmark-cd $1)
 
   if [ ! -z "${TARGETPATH}" ] ; then
-    cd $TARGETPATH
+    cd "${TARGETPATH}"
   fi
 }
 `
