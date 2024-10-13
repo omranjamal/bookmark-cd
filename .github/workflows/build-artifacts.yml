@@ -3,7 +3,7 @@ name: Build & Release Artifacts
 on:
   push:
     branches:
-      - release
+      - releases
 
 jobs:
   build:
