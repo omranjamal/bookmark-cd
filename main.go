@@ -11,6 +11,7 @@ import (
 	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/muesli/termenv"
 	"log"
+	"net/url"
 	"os"
 	"path"
 	"sort"
@@ -68,15 +69,18 @@ func getCandidates() []Candidate {
 		line := scanner.Text()
 		chunks := strings.SplitN(line, " ", 2)
 
+		pathUrl, _ := url.QueryUnescape(chunks[0])
+
 		candidates = append(candidates, Candidate{
 			name: (func() string {
 				if len(chunks) > 1 {
 					return chunks[1]
 				} else {
-					return path.Base(chunks[0])
+					basename, _ := url.QueryUnescape(path.Base(chunks[0]))
+					return basename
 				}
 			})(),
-			path: strings.Replace(chunks[0], "file://", "", 1),
+			path: strings.Replace(pathUrl, "file://", "", 1),
 		})
 	}
 
