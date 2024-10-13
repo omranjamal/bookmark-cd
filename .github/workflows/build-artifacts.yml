@@ -1,0 +1,33 @@
+name: Build & Release Artifacts
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goarch:
+          - "386"
+          - "amd64"
+          - "arm"
+          - "arm64"
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.23.2
+      - name: Install dependencies
+        run: go get .
+      - name: Build for Linux ${{ matrix.goarch }}
+        run: env GOOS=linux GOARCH=${{ matrix.goarch }} go build -o ./bin/bookmark-cd_${{ matrix.goarch }}
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "bookmark-cd - ${{ matrix.goarch }}"
+          path: ./bin/bookmark-cd_${{ matrix.goarch }}
