@@ -277,6 +277,7 @@ func main() {
 
 	if showVersion {
 		fmt.Println("bookmark-cd " + version)
+		return
 	}
 
 	if isPrintShellScript {
