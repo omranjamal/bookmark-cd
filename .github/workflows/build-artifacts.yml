@@ -2,20 +2,12 @@ name: Build & Release Artifacts
 
 on:
   push:
-    branches:
-      - releases
+    tags:
+      - "v*.*.*"
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        goarch:
-          - "386"
-          - "amd64"
-          - "arm"
-          - "arm64"
-
     steps:
       - uses: actions/checkout@v4
       - name: Setup Go
@@ -24,10 +16,19 @@ jobs:
           go-version: 1.23.2
       - name: Install dependencies
         run: go get .
-      - name: Build for Linux ${{ matrix.goarch }}
-        run: env GOOS=linux GOARCH=${{ matrix.goarch }} go build -o ./bin/bookmark-cd_${{ matrix.goarch }}
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+      - name: Build for Linux ${{ matrix.goarch }} - ${{ github.ref_name }}
+        run: |
+          env GOOS=linux GOARCH=386 go build -o ./bin/bookmark-cd_${{ github.ref_name }}_i386
+          env GOOS=linux GOARCH=amd64 go build -o ./bin/bookmark-cd_${{ github.ref_name }}_amd64
+          env GOOS=linux GOARCH=arm go build -o ./bin/bookmark-cd_${{ github.ref_name }}_arm
+          env GOOS=linux GOARCH=arm64 go build -o ./bin/bookmark-cd_${{ github.ref_name }}_arm64
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: "bookmark-cd - ${{ matrix.goarch }}"
-          path: ./bin/bookmark-cd_${{ matrix.goarch }}
+          name: ${{ github.ref_name }}
+          files: |
+            ./bin/bookmark-cd_${{ github.ref_name }}_i386
+            ./bin/bookmark-cd_${{ github.ref_name }}_amd64
+            ./bin/bookmark-cd_${{ github.ref_name }}_arm
+            ./bin/bookmark-cd_${{ github.ref_name }}_arm64
