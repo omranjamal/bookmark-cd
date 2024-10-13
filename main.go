@@ -102,7 +102,7 @@ func getFilteredCandidates(candidates *[]Candidate, searchText string) *[]Filter
 				strings.ToLower(c.name),
 			)
 
-			if rank > 0 {
+			if rank >= 0 {
 				filteredCandidates = append(filteredCandidates, FilteredCandidate{
 					candidate: c,
 					rank:      rank,
