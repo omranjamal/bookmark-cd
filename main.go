@@ -17,8 +17,10 @@ import (
 	"strings"
 )
 
+var version = "vvvv"
+
 var shellFunction string = `
-function bcd() {
+bcd() {
   TARGETPATH=$(bookmark-cd $1)
 
   if [ ! -z "${TARGETPATH}" ] ; then
@@ -258,6 +260,7 @@ func main() {
 
 	isPrintShellScript := false
 	isPrintShellEvalScript := false
+	showVersion := false
 	alias := "bcd"
 
 	for _, arg := range os.Args[1:] {
@@ -265,9 +268,15 @@ func main() {
 			isPrintShellScript = true
 		} else if arg == "--eval" {
 			isPrintShellEvalScript = true
+		} else if arg == "--version" {
+			showVersion = true
 		} else {
 			alias = arg
 		}
+	}
+
+	if showVersion {
+		fmt.Println("bookmark-cd " + version)
 	}
 
 	if isPrintShellScript {

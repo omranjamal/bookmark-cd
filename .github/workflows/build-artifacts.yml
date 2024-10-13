@@ -21,6 +21,9 @@ jobs:
         run: go get .
       - name: Build for Linux ${{ matrix.goarch }} - ${{ github.ref_name }}
         run: |
+          sed -i 's/vvvv/${{ github.ref_name }}/g' ./install.sh
+          sed -i 's/vvvv/${{ github.ref_name }}/g' ./main.go
+          
           env GOOS=linux GOARCH=386 go build -o ./bin/bookmark-cd_${{ github.ref_name }}_i386
           env GOOS=linux GOARCH=amd64 go build -o ./bin/bookmark-cd_${{ github.ref_name }}_amd64
           env GOOS=linux GOARCH=arm go build -o ./bin/bookmark-cd_${{ github.ref_name }}_arm
@@ -35,3 +38,4 @@ jobs:
             ./bin/bookmark-cd_${{ github.ref_name }}_amd64
             ./bin/bookmark-cd_${{ github.ref_name }}_arm
             ./bin/bookmark-cd_${{ github.ref_name }}_arm64
+            ./install.sh
