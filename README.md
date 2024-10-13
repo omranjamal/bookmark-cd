@@ -1,6 +1,9 @@
 # bookmark-cd
 
+![GitHub Release Date](https://img.shields.io/github/release-date/omranjamal/bookmark-cd)
 ![GitHub Release](https://img.shields.io/github/v/release/omranjamal/bookmark-cd)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/omranjamal/bookmark-cd)
+
 
 > The fastest way to `cd` into your folder bookmarks that you create on your file manager.
 
