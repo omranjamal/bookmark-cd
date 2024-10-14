@@ -15,10 +15,10 @@
 2. Fuzzy search
 3. Non interactive mode for even quicker `cd`
 4. Works with:
-   5. [nautilus](https://apps.gnome.org/Nautilus/)
-   6. [thunar](https://docs.xfce.org/xfce/thunar/start)
-   7. [nemo](https://github.com/linuxmint/nemo)
-   8. [caja](https://wiki.mate-desktop.org/mate-desktop/applications/caja/)
+   - [nautilus](https://apps.gnome.org/Nautilus/)
+   - [thunar](https://docs.xfce.org/xfce/thunar/start)
+   - [nemo](https://github.com/linuxmint/nemo)
+   - [caja](https://wiki.mate-desktop.org/mate-desktop/applications/caja/)
 
 ## Usage
 
