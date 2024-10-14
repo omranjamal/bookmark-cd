@@ -43,18 +43,17 @@ curl -sL https://github.com/omranjamal/bookmark-cd/releases/latest/download/inst
 ### Manual Installation
 
 ```bash
-# Step 1: Download the binary (check releases page for all available binaries)
-curl -L -o bookmark-cd https://github.com/omranjamal/bookmark-cd/releases/latest/download/bookmark-cd_v1.0.2_amd64
+# Create installation directory
+mkdir -p ~/.local/share/omranjamal/bookmark-cd
 
-# Step 2: Add execution permissions
-chmod +x ./bookmark-cd
+# Download the binary (check releases page for all available binaries)
+curl -L -o ~/.local/share/omranjamal/bookmark-cd/bookmark-cd https://github.com/omranjamal/bookmark-cd/releases/latest/download/bookmark-cd_v1.1.0_amd64
 
-# Step 3: Move into a directory that is on your path.
-mv ./bookmark-cd /usr/bin/bookmark-cd
+# Add execution permissions
+chmod +x ~/.local/share/omranjamal/bookmark-cd/bookmark-cd
 
-# Step 4: Add to shell
-# ⚠️⚠️ WARNING: make sure you wrote `>>` and not `>` ⚠️⚠️
-bookmark-cd --shell >> ~/.bashrc
+# Add to shell
+~/.local/share/omranjamal/bookmark-cd/bookmark-cd --install ~/.bashrc
 ```
 
 ### Setting Different Alias
@@ -67,8 +66,7 @@ OR, you could add the alias in Step 4 from above by passing
 as the last argument.
 
 ```bash
-# ⚠️⚠️ WARNING: make sure you wrote `>>` and not `>` ⚠️⚠️
-bookmark-cd --shell bookcd >> ~/.bashrc
+~/.local/share/omranjamal/bookmark-cd/bookmark-cd --install ~/.bashrc bookcd
 ```
 
 `bookcd` being the different alias that you want.
