@@ -21,55 +21,66 @@ else
 fi
 
 URL="https://github.com/omranjamal/bookmark-cd/releases/latest/download/bookmark-cd_${V}_${DOWNLOAD_ARCH}"
-TARGET="${INSTALL_TO:-/usr/bin/bookmark-cd}"
+INSTALL_PATH="$HOME/.local/share/omranjamal/bookmark-cd"
+
+check_bookmarks_file() {
+  if [ -f "$HOME/.config/gtk-3.0/bookmarks" ] ; then
+    echo "> check: ✅ system has gtk-3.0 bookmarks file"
+    return 0
+  else
+    echo "> check: FAILED: system does not have gtk-3.0 bookmarks file"
+  fi
+
+  return 1
+}
+
+create_directory() {
+  mkdir -p "$INSTALL_PATH" && return 0
+}
 
 download() {
-  echo "> 📥 downloading $URL -> ./bookmark-cd" && \
-      curl -s -L -o "./bookmark-cd" "$URL" && return 0
+  echo "> download: 📥 downloading bookmark-cd_${V}_${DOWNLOAD_ARCH}" && \
+      curl -s -L -o "$INSTALL_PATH/bookmark-cd" "$URL" && return 0
 }
 
 update_permissions() {
-  echo "> 💪 setting execution permission" && chmod +x ./bookmark-cd && return 0
-}
-
-move() {
-  echo "> 🚚 moving ./bookmark-cd -> $TARGET (👑 this will require root privileges)" && \
-       sudo mv "./bookmark-cd" "$TARGET" && return 0
+  echo "> permissions: 💪 setting execution permission" && chmod +x "$INSTALL_PATH/bookmark-cd" && return 0
 }
 
 add_to_shell() {
   if [ -f "$HOME/.bashrc" ]; then
-    echo "> 👉 Detected ~/.bashrc"
-    echo "> ⚡ Adding to ~/.bashrc"
-    bookmark-cd --shell >> "$HOME/.bashrc"
+    echo "> detected: ~/.bashrc"
+    echo "> shell function: ⚡ Adding to ~/.bashrc"
+    $INSTALL_PATH/bookmark-cd --install "$HOME/.bashrc"
 
-    echo "\e[0m"
-    echo "    🚀 Run this, or re-start your bash terminal:"
-    echo "       source ~/.bashrc"
-    echo "\e[2m"
+    echo   "\e[0m"
+    echo   "    🚀 Run this, or re-start your bash terminal:"
+    echo   "       $ \e[1msource ~/.bashrc\e[0m"
+    echo   "\e[2m"
   fi
 
   if [ -f "$HOME/.zshrc" ]; then
-    echo "> 👉 Detected ~/.zshrc"
-    echo "> ⚡ Adding to ~/.zshrc"
-    bookmark-cd --shell >> "$HOME/.zshrc"
+    echo "> detected: ~/.zshrc"
+    echo "> shell function: ⚡ Adding to ~/.zshrc"
+    $INSTALL_PATH/bookmark-cd --install "$HOME/.zshrc"
 
-    echo "\e[0m"
-    echo "    🚀 Run this, or re-start your zsh terminal:"
-    echo "       source ~/.zshrc"
-    echo "\e[2m"
+    echo   "\e[0m"
+    echo   "    🚀 Run this, or re-start your zsh terminal:"
+    echo   "       $ \e[1msource ~/.zshrc\e[0m"
+    echo   "\e[2m"
   fi
 }
 
 completed() {
-  echo "> DONE. ✅"
+  return 0
 }
 
 printf "\e[2m"
 
-download && \
+check_bookmarks_file && \
+  create_directory && \
+  download && \
   update_permissions && \
-  move && \
   add_to_shell && \
   completed
 

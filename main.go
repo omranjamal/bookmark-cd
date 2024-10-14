@@ -10,17 +10,48 @@ import (
 	"github.com/jwalton/go-supportscolor"
 	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/muesli/termenv"
+	"io"
 	"log"
 	"net/url"
 	"os"
 	"path"
+	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 )
 
 var version = "vvvv"
 
-var shellFunction string = `
+var helpText = `
+
+# BOOKMARK-CD
+
+> CLI utility that lets you interactively pick the bookmarked
+  directory you want to cd into.
+
+Usage:
+  bcd                  Start interactive mode bookmark picker
+  bcd [SEARCH_TERM]    Search by SEARCH_TERM and automatically cd into it, if there is only one match
+
+  [UP] / [DOWN] Arrow Keys (interactive mode only):
+    Lets you choose a bookmarked directory from the list
+
+  Start Typing (interactive mode only):
+    This will allow you to filter the suggested bookmarked directories
+
+Flags:
+  -h / --help                  Show this help message
+
+  --shell [ALIAS]              Show the shell function code with name set to ALIAS (optional)
+                               Mostly useful for manual installation.
+
+  --install FILE [ALIAS]       Add or update the shell function in a shell startup file
+                               like ~/.bashrc; Setting an ALIAS will change the function
+                               name from bcd to ALIAS
+`
+
+var shellFunction string = `# start: bookmark-cd
 bcd() {
   TARGETPATH=$(bookmark-cd $1)
 
@@ -28,7 +59,7 @@ bcd() {
     cd "${TARGETPATH}"
   fi
 }
-`
+# end: bookmark-cd`
 
 type Candidate struct {
 	name string
@@ -253,52 +284,169 @@ func setupTerminal() {
 	}
 }
 
+func copyFile(src, dst string) error {
+	sourceFile, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer sourceFile.Close()
+
+	destFile, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer destFile.Close()
+
+	_, err = io.Copy(destFile, sourceFile)
+	if err != nil {
+		return err
+	}
+
+	err = destFile.Sync()
+	return err
+}
+
+func install(filePath string, alias string) {
+	fileDir := filepath.Dir(filePath)
+	fileName := filepath.Base(filePath)
+	backupFileName := fmt.Sprintf("%s.%d.bcd-install-backup", fileName, time.Now().UnixMilli())
+	backupFilePath := filepath.Join(fileDir, backupFileName)
+
+	copyError := copyFile(filePath, backupFilePath)
+
+	if copyError != nil {
+		log.Fatal(copyError)
+	}
+
+	b, readError := os.ReadFile(filePath)
+
+	if readError != nil {
+		log.Fatal(readError)
+	}
+
+	fileContents := string(b)
+	lines := strings.Split(strings.TrimSpace(fileContents), "\n")
+	modifiedLines := make([]string, 0, len(lines)+128)
+
+	started := false
+	ended := false
+
+	for _, line := range lines {
+		if !started && strings.TrimSpace(line) == "# start: bookmark-cd" {
+			started = true
+			continue
+		} else if started && strings.TrimSpace(line) == "# end: bookmark-cd" {
+			ended = true
+			continue
+		}
+
+		if !started || ended {
+			modifiedLines = append(modifiedLines, line)
+		}
+	}
+
+	shellFunctionLines := strings.Split(
+		strings.Replace(shellFunction, "bcd", alias, 1),
+		"\n",
+	)
+
+	modifiedLines = append(
+		modifiedLines,
+		shellFunctionLines...,
+	)
+
+	writeError := os.WriteFile(
+		filePath,
+		[]byte(
+			strings.TrimSpace(strings.Join(modifiedLines, "\n"))+"\n",
+		),
+		0644,
+	)
+
+	if writeError != nil {
+		log.Fatal(writeError)
+	}
+
+	backupRemovalError := os.Remove(backupFilePath)
+
+	if backupRemovalError != nil {
+		log.Fatal(backupRemovalError)
+	}
+}
+
 func main() {
 	setupTerminal()
 
-	initialSearchText := ""
+	isPrintShellScript := 0
+	isInstall := 0
 
-	if len(os.Args) > 1 {
-		initialSearchText = os.Args[1]
-	}
-
-	isPrintShellScript := false
-	isPrintShellEvalScript := false
-	showVersion := false
 	alias := "bcd"
+	shellFile := ""
+
+	search := make([]string, 0, 8)
 
 	for _, arg := range os.Args[1:] {
 		if arg == "--shell" {
-			isPrintShellScript = true
-		} else if arg == "--eval" {
-			isPrintShellEvalScript = true
-		} else if arg == "--version" {
-			showVersion = true
+			isPrintShellScript = 1
+		} else if arg == "--install" {
+			isInstall = 1
+		} else if arg == "--version" || arg == "-v" {
+			fmt.Println("bookmark-cd " + version)
+			return
+		} else if arg == "--help" || arg == "-h" {
+			fmt.Print(helpText)
+			return
 		} else {
-			alias = arg
+			if isPrintShellScript == 1 {
+				alias = arg
+			} else if isInstall == 1 {
+				if shellFile != "" {
+					alias = arg
+				} else {
+					absolutePath, absolutePathError := filepath.Abs(arg)
+
+					if absolutePathError != nil {
+						log.Fatal(absolutePathError)
+					}
+
+					shellFile = absolutePath
+				}
+			} else {
+				search = append(search, arg)
+			}
 		}
 	}
 
-	if showVersion {
-		fmt.Println("bookmark-cd " + version)
+	if (isPrintShellScript + isInstall) > 1 {
+		fmt.Println("ERROR: can't use --shell and --install together")
+		os.Exit(1)
 		return
 	}
 
-	if isPrintShellScript {
-		if isPrintShellEvalScript {
-			fmt.Fprintf(os.Stdout, "\neval \"$(bookmark-cd --shell %s)\"\n", alias)
+	if isInstall == 1 {
+		if shellFile == "" {
+			fmt.Println("ERROR: must provide a shell file to modify")
+			os.Exit(1)
+			return
 		} else {
-			fmt.Fprintf(
-				os.Stdout,
-				"%s\n",
-				strings.Replace(
-					shellFunction,
-					"bcd",
-					alias,
-					1,
-				),
-			)
+			install(shellFile, alias)
+			return
 		}
+	}
+
+	initialSearchText := strings.Join(search, " ")
+
+	if isPrintShellScript == 1 {
+		fmt.Fprintf(
+			os.Stdout,
+			"%s\n",
+			strings.Replace(
+				shellFunction,
+				"bcd",
+				alias,
+				1,
+			),
+		)
 
 		return
 	}
