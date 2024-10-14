@@ -53,7 +53,7 @@ Flags:
 
 var shellFunction string = `# start: bookmark-cd
 bcd() {
-  TARGETPATH=$(bookmark-cd $1)
+  TARGETPATH=$("$HOME/.local/share/omranjamal/bookmark-cd/bookmark-cd" $1)
 
   if [ ! -z "${TARGETPATH}" ] ; then
     cd "${TARGETPATH}"
