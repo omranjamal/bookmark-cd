@@ -1,4 +1,4 @@
-package main
+package bcd
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func install(filePath string, alias string) {
+func Install(filePath string, alias string) {
 	fileDir := filepath.Dir(filePath)
 	fileName := filepath.Base(filePath)
 	backupFileName := fmt.Sprintf("%s.%d.bcd-install-backup", fileName, time.Now().UnixMilli())
@@ -49,7 +49,7 @@ func install(filePath string, alias string) {
 	}
 
 	shellFunctionLines := strings.Split(
-		strings.Replace(shellFunction, "bcd", alias, 1),
+		strings.Replace(ShellFunction, "bcd", alias, 1),
 		"\n",
 	)
 

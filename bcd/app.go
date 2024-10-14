@@ -1,4 +1,4 @@
-package main
+package bcd
 
 import (
 	"bytes"
@@ -130,7 +130,7 @@ func (m model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func run(initialSearchText string) {
+func Run(initialSearchText string) {
 	m := initModel(initialSearchText)
 
 	if len(*m.state.filteredCandidates) == 1 {

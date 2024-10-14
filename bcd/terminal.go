@@ -1,4 +1,4 @@
-package main
+package bcd
 
 import (
 	"github.com/charmbracelet/lipgloss"
@@ -6,7 +6,7 @@ import (
 	"github.com/muesli/termenv"
 )
 
-func setupTerminal() {
+func SetupTerminal() {
 	term := supportscolor.Stderr()
 
 	if term.Has16m {

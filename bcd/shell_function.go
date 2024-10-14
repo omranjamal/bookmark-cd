@@ -1,6 +1,6 @@
-package main
+package bcd
 
-var shellFunction string = `# start: bookmark-cd
+var ShellFunction string = `# start: bookmark-cd
 bcd() {
   TARGETPATH=$("$HOME/.local/share/omranjamal/bookmark-cd/bookmark-cd" $1)
 

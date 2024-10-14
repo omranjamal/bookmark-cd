@@ -1,6 +1,7 @@
 package main
 
 import (
+	bcd "bookmark-cd/bcd"
 	"fmt"
 	"log"
 	"os"
@@ -11,7 +12,7 @@ import (
 var version = "vvvv"
 
 func main() {
-	setupTerminal()
+	bcd.SetupTerminal()
 
 	isPrintShellScript := 0
 	isInstall := 0
@@ -30,7 +31,7 @@ func main() {
 			fmt.Println("bookmark-cd " + version)
 			return
 		} else if arg == "--help" || arg == "-h" {
-			fmt.Print(helpText)
+			fmt.Print(bcd.HelpText)
 			return
 		} else {
 			if isPrintShellScript == 1 {
@@ -65,7 +66,7 @@ func main() {
 			os.Exit(1)
 			return
 		} else {
-			install(shellFile, alias)
+			bcd.Install(shellFile, alias)
 			return
 		}
 	}
@@ -75,7 +76,7 @@ func main() {
 			os.Stdout,
 			"%s\n",
 			strings.Replace(
-				shellFunction,
+				bcd.ShellFunction,
 				"bcd",
 				alias,
 				1,
@@ -86,5 +87,5 @@ func main() {
 	}
 
 	initialSearchText := strings.Join(search, " ")
-	run(initialSearchText)
+	bcd.Run(initialSearchText)
 }

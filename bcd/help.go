@@ -1,6 +1,6 @@
-package main
+package bcd
 
-var helpText = `
+var HelpText = `
 
 # BOOKMARK-CD
 
