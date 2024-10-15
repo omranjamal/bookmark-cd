@@ -1,4 +1,4 @@
-module bookmark-cd
+module github.com/omranjamal/bookmark-cd
 
 go 1.23.2
 
