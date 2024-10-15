@@ -1,7 +1,7 @@
 package main
 
 import (
-	bcd "bookmark-cd/bcd"
+	bcd "github.com/omranjamal/bookmark-cd/bcd"
 	"fmt"
 	"log"
 	"os"
