@@ -1,8 +1,8 @@
 package main
 
 import (
-	bcd "github.com/omranjamal/bookmark-cd/bcd"
 	"fmt"
+	bcd "github.com/omranjamal/bookmark-cd/bcd"
 	"log"
 	"os"
 	"path/filepath"
@@ -28,10 +28,10 @@ func main() {
 		} else if arg == "--install" {
 			isInstall = 1
 		} else if arg == "--version" || arg == "-v" {
-			fmt.Println("bookmark-cd " + version)
+			os.Stderr.WriteString("bookmark-cd " + version + "\n")
 			return
 		} else if arg == "--help" || arg == "-h" {
-			fmt.Print(bcd.HelpText)
+			os.Stderr.WriteString(bcd.HelpText + "\n")
 			return
 		} else {
 			if isPrintShellScript == 1 {
@@ -55,14 +55,14 @@ func main() {
 	}
 
 	if (isPrintShellScript + isInstall) > 1 {
-		fmt.Println("ERROR: can't use --shell and --install together")
+		os.Stderr.WriteString("ERROR: can't use --shell and --install together\n")
 		os.Exit(1)
 		return
 	}
 
 	if isInstall == 1 {
 		if shellFile == "" {
-			fmt.Println("ERROR: must provide a shell file to modify")
+			os.Stderr.WriteString("ERROR: must provide a shell file to modify\n")
 			os.Exit(1)
 			return
 		} else {
