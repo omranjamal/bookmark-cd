@@ -12,15 +12,17 @@ import (
 )
 
 func getCandidates() []Candidate {
+	candidates := make([]Candidate, 0, 32)
+
 	filename := os.Getenv("HOME") + "/.config/gtk-3.0/bookmarks"
 	file, err := os.Open(filename)
 
 	if err != nil {
-		fmt.Printf("could not open file %s \n", filename)
+		fmt.Fprintf(os.Stderr, "could not open file %s \n", filename)
+		return candidates
 	}
 
 	scanner := bufio.NewScanner(file)
-	candidates := make([]Candidate, 0, 32)
 
 	for scanner.Scan() {
 		line := scanner.Text()
